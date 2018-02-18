@@ -1,3 +1,15 @@
+# ======== t2bot.io ========
+adminme.js
+discord.db*
+/*.sh
+/*.txt
+room-store.db*
+user-store.db*
+node_modules*
+# ======== t2bot.io ========
+
+
+
 /.idea
 
 # Logs
