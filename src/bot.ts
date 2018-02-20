@@ -20,7 +20,7 @@ const MSG_PROCESS_DELAY = 750;
 const MIN_PRESENCE_UPDATE_DELAY = 250;
 
 // TODO: This is bad. We should be serving the icon from the own homeserver.
-const MATRIX_ICON_URL = "https://matrix.org/_matrix/media/r0/download/matrix.org/mlxoESwIsTbJrfXyAAogrNxA";
+const MATRIX_ICON_URL = "https://t2bot.io/_matrix/media/v1/download/t2l.io/7f353a2d796364e2b31a17b08caa4974";
 class ChannelLookupResult {
   public channel: Discord.TextChannel;
   public botUser: boolean;
