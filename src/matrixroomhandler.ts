@@ -16,7 +16,8 @@ import * as Bluebird from "bluebird";
 import { Util } from "./util";
 import { Provisioner } from "./provisioner";
 
-const ICON_URL = "https://matrix.org/_matrix/media/r0/download/matrix.org/mlxoESwIsTbJrfXyAAogrNxA";
+const ICON_URL = "https://t2bot.io/_matrix/media/r0/download/matrix.org/mlxoESwIsTbJrfXyAAogrNxA";
+const JOIN_DELAY = 6000;
 const HTTP_UNSUPPORTED = 501;
 const ROOM_NAME_PARTS = 2;
 const AGE_LIMIT = 900000; // 15 * 60 * 1000
