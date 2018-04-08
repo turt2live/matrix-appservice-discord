@@ -89,6 +89,11 @@ export class MatrixRoomHandler {
       log.warn("MatrixRoomHandler", "Skipping event due to age %s > %s", event.unsigned.age, AGE_LIMIT);
       return Promise.reject("Event too old");
     }
+    // CUSTOM FOR T2BOT.IO
+    // Don't allow bridges to espernet
+    if (event.type === "m.room.member") {
+        this.checkEspernet(event.room_id, context);
+    }
     if (event.type === "m.room.member" && event.content.membership === "invite") {
       return this.HandleInvite(event);
     } else if (event.type === "m.room.redaction" && context.rooms.remote) {
@@ -138,6 +143,27 @@ export class MatrixRoomHandler {
       log.info("MatrixRoomHandler", "Accepting invite for bridge bot");
       return this.joinRoom(this.bridge.getIntent(), event.room_id);
     }
+  }
+
+  // CUSTOM FOR T2BOT.IO
+  // Don't allow bridges to espernet
+  private async checkEspernet(roomId: string, context: any) {
+      const remoteRoom = context.rooms.remote;
+      if (!remoteRoom) return;
+      try {
+          const joinedMembers = await this.bridge.getBot().getJoinedMembers(roomId);
+          const members = Object.keys(joinedMembers);
+          if (members.indexOf("@espernet-irc:matrix.org") !== -1 || members.filter(m => m.startsWith("@_espernet")).length > 0) {
+              this.bridge.getIntent().sendMessage(roomId, {
+                  msgtype: "m.notice",
+                  body: "This room cannot be bridged to Discord and EsperNet because EsperNet's terms of service do not allow this bridge to operate. The Discord bridge is being shut down in this room. Please visit #help:t2bot.io for more information.",
+              });
+              // TODO: There's probably a way to get the room ID from the remote room, but this is fine for now
+              await this.provisioner.UnbridgeRoom(remoteRoom, roomId);
+          }
+      }catch (err) {
+          log.error(err);
+      }
   }
 
   public async ProcessCommand(event: any, context: any) {
@@ -203,6 +229,17 @@ export class MatrixRoomHandler {
               return this.bridge.getIntent().sendMessage(event.room_id, {
                   msgtype: "m.notice",
                   body: "This room is already bridged to a Discord guild.",
+              });
+          }
+
+          // CUSTOM FOR T2BOT.IO
+          // Don't allow new bridges to espernet
+          const joinedMembers = await this.bridge.getBot().getJoinedMembers(event.room_id);
+          const members = Object.keys(joinedMembers);
+          if (members.indexOf("@espernet-irc:matrix.org") !== -1 || members.filter(m => m.startsWith("@_espernet")).length > 0) {
+              return this.bridge.getIntent().sendMessage(event.room_id, {
+                  msgtype: "m.notice",
+                  body: "This room cannot be bridged to Discord because it is bridged to EsperNet. The terms of service on EsperNet prevent this bridge from operating in IRC rooms. If you have any questions, please visit #help:t2bot.io",
               });
           }
 

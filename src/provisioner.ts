@@ -29,8 +29,16 @@ export class Provisioner {
         this.bridge.getRoomStore().setMatrixRoom(local); // Needs to be done after linking
     }
 
-    public UnbridgeRoom(remoteRoom: RemoteRoom) {
-        return this.bridge.getRoomStore().removeEntriesByRemoteRoomId(remoteRoom.getId());
+    public async UnbridgeRoom(remoteRoom: RemoteRoom, roomId: string=null) {
+        this.bridge.getRoomStore().removeEntriesByRemoteRoomId(remoteRoom.getId());
+        if (roomId) {
+            const joinedMembers = await this.bridge.getBot().getJoinedMembers(roomId);
+            const members = Object.keys(joinedMembers);
+            for (const member of members) {
+                if (!member.startsWith("@_discord") || member === this.bridge.getIntent().getClient().getUserId()) continue;
+                await this.bridge.getIntent(member).leave(roomId);
+            }
+        }
     }
 
     public AskBridgePermission(channel: Discord.TextChannel, requestor: string): Promise<any> {
