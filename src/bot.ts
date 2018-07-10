@@ -493,6 +493,7 @@ export class DiscordBot {
           id: guildMember.id,
           roles: guildMember.roles.map((role) => { return {
             name: role.name,
+            username: guildMember.user.username, // validated earlier
             color: role.color,
             position: role.position,
           }; }),
