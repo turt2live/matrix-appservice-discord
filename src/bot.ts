@@ -491,9 +491,9 @@ export class DiscordBot {
         "displayname": guildMember.displayName,
         "uk.half-shot.discord.member": {
           id: guildMember.id,
+          username: `${guildMember.user.username}#${guildMember.user.discriminator}`,
           roles: guildMember.roles.map((role) => { return {
             name: role.name,
-            username: guildMember.user.username, // validated earlier
             color: role.color,
             position: role.position,
           }; }),
